@@ -1,0 +1,71 @@
+{
+    "app": {
+      "name": "RAG Assistant",
+      "tagline": "Your intelligent document assistant"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "import": "Import Documents",
+      "chat": "Chat",
+      "history": "History",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "totalDocuments": "Total Documents",
+      "totalQueries": "Total Queries",
+      "avgResponseTime": "Avg. Response Time"
+    },
+    "import": {
+      "title": "Import Documents",
+      "dropzone": "Drag & drop files here, or click to select files",
+      "supported": "Supported formats: PDF, DOCX, TXT",
+      "uploaded": "Uploaded files",
+      "processing": "Processing...",
+      "success": "Successfully uploaded!",
+      "failed": "Upload failed"
+    },
+    "chat": {
+      "placeholder": "Ask a question about your documents...",
+      "send": "Send",
+      "sources": "Sources",
+      "loading": "Thinking..."
+    },
+    "history": {
+      "title": "Query History",
+      "noResults": "No history found",
+      "date": "Date",
+      "query": "Query",
+      "actions": "Actions"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure your application preferences and RAG settings",
+      "language": "Language",
+      "languageChanged": "Language changed successfully",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "ragConfig": "RAG Configuration",
+      "embedding": "Embedding Model",
+      "chunkSize": "Chunk Size",
+      "overlap": "Chunk Overlap",
+      "clearData": "Clear",
+      "clearDataDescription": "This will remove all your documents and chat history. This action cannot be undone.",
+      "confirmClearData": "Are you sure you want to clear all data? This action cannot be undone.",
+      "dataCleared": "All data has been cleared successfully",
+      "saved": "Settings saved successfully",
+      "dangerZone": "Danger Zone"
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": "An error occurred",
+      "retry": "Retry",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "search": "Search"
+    }
+  }

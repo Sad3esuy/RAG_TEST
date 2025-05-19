@@ -1,0 +1,71 @@
+{
+    "app": {
+      "name": "Trợ lý RAG",
+      "tagline": "Trợ lý tài liệu thông minh của bạn"
+    },
+    "nav": {
+      "dashboard": "Tổng quan",
+      "import": "Nhập tài liệu",
+      "chat": "Trò chuyện",
+      "history": "Lịch sử",
+      "settings": "Cài đặt"
+    },
+    "dashboard": {
+      "title": "Tổng quan",
+      "totalDocuments": "Tổng số tài liệu",
+      "totalQueries": "Tổng số truy vấn",
+      "avgResponseTime": "Thời gian phản hồi TB"
+    },
+    "import": {
+      "title": "Nhập tài liệu",
+      "dropzone": "Kéo và thả tệp vào đây, hoặc nhấp để chọn tệp",
+      "supported": "Định dạng hỗ trợ: PDF, DOCX, TXT",
+      "uploaded": "Tệp đã tải lên",
+      "processing": "Đang xử lý...",
+      "success": "Tải lên thành công!",
+      "failed": "Tải lên thất bại"
+    },
+    "chat": {
+      "placeholder": "Đặt câu hỏi về tài liệu của bạn...",
+      "send": "Gửi",
+      "sources": "Nguồn",
+      "loading": "Đang suy nghĩ..."
+    },
+    "history": {
+      "title": "Lịch sử truy vấn",
+      "noResults": "Không tìm thấy lịch sử",
+      "date": "Ngày",
+      "query": "Truy vấn",
+      "actions": "Hành động"
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "description": "Cấu hình tùy chọn ứng dụng và cài đặt RAG",
+      "language": "Ngôn ngữ",
+      "languageChanged": "Đã thay đổi ngôn ngữ thành công",
+      "theme": "Giao diện",
+      "light": "Sáng",
+      "dark": "Tối",
+      "ragConfig": "Cấu hình RAG",
+      "embedding": "Mô hình Embedding",
+      "chunkSize": "Kích thước Chunk",
+      "overlap": "Độ chồng lấp Chunk",
+      "clearData": "Xóa tất cả dữ liệu",
+      "clearDataDescription": "Hành động này sẽ xóa tất cả tài liệu và lịch sử trò chuyện của bạn. Không thể hoàn tác.",
+      "confirmClearData": "Bạn có chắc chắn muốn xóa tất cả dữ liệu? Hành động này không thể hoàn tác.",
+      "dataCleared": "Đã xóa tất cả dữ liệu thành công",
+      "saved": "Đã lưu cài đặt thành công",
+      "dangerZone": "Khu vực nguy hiểm"
+    },
+    "common": {
+      "loading": "Đang tải...",
+      "error": "Đã xảy ra lỗi",
+      "retry": "Thử lại",
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "edit": "Sửa",
+      "view": "Xem",
+      "search": "Tìm kiếm"
+    }
+  }

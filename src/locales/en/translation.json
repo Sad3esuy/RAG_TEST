@@ -1,0 +1,41 @@
+{
+  "common": {
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "signIn": "Sign in",
+    "register": "Register",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "auth": {
+    "signInTitle": "Sign in to your account",
+    "createAccountTitle": "Create your account",
+    "resetPasswordTitle": "Reset your password",
+    "resetInstructions": "Enter your email address and we'll send you instructions to reset your password",
+    "passwordMismatch": "Passwords do not match",
+    "resetEmailSent": "Password reset instructions have been sent to your email"
+  },
+  "nav": {
+    "import": "Import Documents",
+    "chat": "Chat",
+    "history": "History",
+    "settings": "Settings",
+    "dashboard": "Dashboard"
+  },
+  "import": {
+    "title": "Import Documents",
+    "description": "Upload documents to build a knowledge base. Supported formats: PDF, DOCX, TXT, MD",
+    "dropzone": "Drag and drop PDF files here, or click to select files",
+    "supported": "Only PDF files are supported",
+    "success": "File uploaded successfully",
+    "error": "Upload failed"
+  }
+} 

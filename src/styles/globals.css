@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased scroll-smooth;
+  }
+  
+  body {
+    @apply font-sans text-base bg-white dark:bg-background-dark 
+           text-text-light dark:text-text-dark transition-colors duration-200;
+  }
+    /* cho html, body, #root đều full chiều cao */
+    html, body, #root {
+      @apply h-full;
+    }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-medium;
+  }
+  
+  h1 { @apply text-4xl; }
+  h2 { @apply text-3xl; }
+  h3 { @apply text-2xl; }
+  h4 { @apply text-xl; }
+  h5 { @apply text-lg; }
+  h6 { @apply text-base; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition duration-300;
+  }
+  
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition duration-200 
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white 
+           focus:ring-primary-light/50;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary-dark text-white 
+           focus:ring-secondary-light/50;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-300 dark:border-gray-600 hover:bg-gray-100 
+           dark:hover:bg-gray-700 focus:ring-gray-200 dark:focus:ring-gray-700;
+  }
+  
+  .input {
+    @apply w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 
+           dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 
+           focus:ring-primary/50 transition duration-200;
+  }
+}
+@layer utilities {
+  .scrollbar-hide {
+    /* Firefox */
+    scrollbar-width: none;
+    /* IE 10+ */
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    /* Chrome, Safari, Opera */
+    display: none;
+  }
+}
