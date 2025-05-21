@@ -1,11 +1,12 @@
 // src/components/features/ChatInterface.jsx
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import { Send, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import Button from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../common/Toast';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const ChatInterface = ({ chatId, onNewChat }) => {
   const { t } = useTranslation();
@@ -41,24 +42,37 @@ const ChatInterface = ({ chatId, onNewChat }) => {
   
   const loadChatMessages = async () => {
     try {
-      const response = await fetch(`/api/chat/chats/${chatId}`, {
+      const response = await fetch(`${API_BASE_URL}/chat/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
       if (!response.ok) {
-        throw new Error('Failed to load chat messages');
+        throw new Error(`Failed to load chat messages: ${response.status} ${response.statusText}`);
       }
       
-      const data = await response.json();
-      setMessages(data.chat.messages);
+      const text = await response.text();
+      if (!text) {
+        throw new Error('Empty response from server');
+      }
       
-    } catch (error) {
+      try {
+        const data = JSON.parse(text);
+        const conversation = data.conversations?.find(conv => conv.id === chatId);
+        if (conversation) {
+          setMessages(conversation.messages);
+        }
+      } catch (parseError) {
+        throw new Error(`Invalid JSON response: ${parseError.message}`);
+      }
+      
+    } catch (err) {
       showToast({
         type: 'error',
-        message: 'Failed to load chat messages'
+        message: err.message
       });
+      setMessages([]);
     }
   };
   
@@ -67,72 +81,64 @@ const ChatInterface = ({ chatId, onNewChat }) => {
       setIsLoading(true);
       
       try {
-        // Create new chat if none exists
-        if (!chatId) {
-          const createResponse = await fetch('/api/chat/chats', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              title: message.substring(0, 50) // Use first 50 chars as title
-            })
-          });
-          
-          if (!createResponse.ok) {
-            throw new Error('Failed to create chat');
-          }
-          
-          const chatData = await createResponse.json();
-          onNewChat(chatData.chat.id);
-        }
-        
         // Send message
-        const response = await fetch(`/api/chat/chats/${chatId}/messages`, {
+        const response = await fetch(`${API_BASE_URL}/ask`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            content: message
+            query: message
           })
         });
         
         if (!response.ok) {
-          throw new Error('Failed to send message');
+          throw new Error(`Failed to send message: ${response.status} ${response.statusText}`);
         }
         
-        const data = await response.json();
+        const text = await response.text();
+        if (!text) {
+          throw new Error('Empty response from server');
+        }
         
-        // Update messages
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'user',
-            content: message,
-            created_at: new Date().toISOString()
-          },
-          {
-            role: 'assistant',
-            content: data.response,
-            sources: data.sources,
-            created_at: new Date().toISOString()
+        try {
+          const data = JSON.parse(text);
+          
+          // Update messages
+          setMessages(prev => [
+            ...prev,
+            {
+              role: 'user',
+              content: message,
+              timestamp: new Date().toISOString()
+            },
+            {
+              role: 'assistant',
+              content: data.response,
+              timestamp: new Date().toISOString()
+            }
+          ]);
+          
+          // If this is a new conversation, notify parent
+          if (data.conversation_id && (!chatId || chatId === 'new')) {
+            onNewChat(data.conversation_id);
           }
-        ]);
-        
-        setMessage('');
-        
-        // Reset textarea height
-        if (textareaRef.current) {
-          textareaRef.current.style.height = 'auto';
+          
+          setMessage('');
+          
+          // Reset textarea height
+          if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+          }
+        } catch (parseError) {
+          throw new Error(`Invalid JSON response: ${parseError.message}`);
         }
         
       } catch (error) {
         showToast({
           type: 'error',
-          message: 'Failed to send message'
+          message: error.message
         });
       } finally {
         setIsLoading(false);
@@ -151,18 +157,13 @@ const ChatInterface = ({ chatId, onNewChat }) => {
     <div className="flex flex-col h-full relative overflow-hidden">
       <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-[#ffffff22] rounded-[10px]">
         {messages.length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center justify-center h-auto text-center p-6 text-gray-500 dark:text-gray-400"
-          >
+          <div className="flex flex-col items-center justify-center h-auto text-center p-6 text-gray-500 dark:text-gray-400">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
             <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">Ask questions about your documents</h3>
             <p className="mt-1 max-w-md">Start a conversation by uploading documents and asking questions about them.</p>
-          </motion.div>
+          </div>
         ) : (
           messages.map((msg, index) => (
             <ChatMessage key={index} message={msg} />
@@ -222,9 +223,7 @@ const ChatMessage = ({ message }) => {
     : 'relative';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className={`flex items-start space-x-3 ${isUser ? 'justify-end' : ''}`}
     >
       {!isUser && (
@@ -274,7 +273,7 @@ const ChatMessage = ({ message }) => {
           You
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

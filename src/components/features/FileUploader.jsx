@@ -2,20 +2,20 @@
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import { Upload, File, X } from 'lucide-react';
 import Button from '../common/Button';
 import { useToast } from '../common/Toast';
 import { useAuth } from '../../context/AuthContext';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const FileUploader = ({ onUpload }) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const { token } = useAuth();
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    // Chỉ cho phép PDF
+    // Only allow PDFs
     const validFiles = acceptedFiles.filter(file => file.type === 'application/pdf');
 
     if (validFiles.length !== acceptedFiles.length) {
@@ -43,19 +43,27 @@ const FileUploader = ({ onUpload }) => {
     // Upload files to FastAPI backend
     for (const fileData of processedFiles) {
       try {
+        console.log(`Uploading file: ${fileData.name}`);
         const formData = new FormData();
         formData.append('file', fileData.file);
 
         const response = await fetch(`${API_BASE_URL}/upload_pdf`, {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formData
         });
 
+        console.log('Upload response status:', response.status);
         const text = await response.text();
+        console.log('Upload response text:', text);
+
         let data;
         try {
           data = JSON.parse(text);
-        } catch {
+        } catch (e) {
+          console.error('Failed to parse response:', e);
           throw new Error('Invalid response from server: ' + text);
         }
 
@@ -80,6 +88,7 @@ const FileUploader = ({ onUpload }) => {
           message: data.message || `${fileData.name} uploaded successfully!`
         });
       } catch (err) {
+        console.error('Upload error:', err);
         onUpload((prev) =>
           prev.map(f =>
             f.id === fileData.id
@@ -97,7 +106,7 @@ const FileUploader = ({ onUpload }) => {
         });
       }
     }
-  }, [onUpload, showToast]);
+  }, [onUpload, showToast, token]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -186,10 +195,8 @@ export const FileUploadList = ({ files, onRemove }) => {
       
       <div className="space-y-3">
         {files.map((file) => (
-          <motion.div
+          <div
             key={file.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
             className="flex items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
           >
             <div className="mr-3 text-xl">{getFileIcon(file.type)}</div>
@@ -201,45 +208,26 @@ export const FileUploadList = ({ files, onRemove }) => {
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {formatFileSize(file.size)}
               </p>
-              
+            </div>
+            
+            <div className="ml-4 flex items-center">
               {file.status === 'uploading' && (
-                <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                  <div 
-                    className="bg-primary h-1.5 rounded-full transition-all duration-300" 
+                <div className="w-16 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
                     style={{ width: `${file.progress}%` }}
-                  ></div>
+                  />
                 </div>
               )}
               
-              {file.status === 'error' && (
-                <p className="text-xs text-red-500 mt-1">
-                  Upload failed. Please try again.
-                </p>
-              )}
+              <button
+                onClick={() => handleRemove(file.id, file.documentId)}
+                className="ml-4 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            
-            <div className="ml-4">
-              {file.status === 'completed' ? (
-                <button
-                  onClick={() => handleRemove(file.id, file.documentId)}
-                  className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                  <X size={16} className="text-gray-500 dark:text-gray-400" />
-                </button>
-              ) : file.status === 'uploading' ? (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {file.progress}%
-                </span>
-              ) : (
-                <button
-                  onClick={() => handleRemove(file.id)}
-                  className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                  <X size={16} className="text-gray-500 dark:text-gray-400" />
-                </button>
-              )}
-            </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

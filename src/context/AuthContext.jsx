@@ -37,43 +37,45 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       console.log('Attempting login...');
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
       });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
-      }
-      
+
+      console.log('Login response status:', response.status);
       const data = await response.json();
       console.log('Login response:', data);
-      
-      // Save token and user data
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setToken(data.token);
-      setUser(data.user);
-      
+
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${data.detail || 'Login failed'}`);
+      }
+
+      // Store token and user data
+      localStorage.setItem('token', data.access_token);
+      const userData = {
+        email: email,
+        role_id: 1  // For demo purposes
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+
       showToast({
         type: 'success',
-        message: 'Login successful'
+        message: 'Login successful!'
       });
-      
-      // Navigate based on user role
-      const targetRoute = getRoleBasedRoute(data.user.role_id);
-      console.log('Navigating to:', targetRoute);
-      navigate(targetRoute, { replace: true });
-      
+
+      // Navigate based on role
+      const roleBasedRoute = userData.role_id === 1 ? '/dashboard' : '/chat';
+      navigate(roleBasedRoute);
     } catch (error) {
       console.error('Login error:', error);
       showToast({
         type: 'error',
-        message: error.message
+        message: error.message || 'Failed to login. Please try again.'
       });
       throw error;
     }
